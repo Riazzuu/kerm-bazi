@@ -28,6 +28,7 @@
             align-items: center;
             min-height: 100vh;
             touch-action: manipulation;
+            overflow: hidden;
         }
         
         .container {
@@ -65,13 +66,6 @@
             font-weight: bold;
         }
         
-        .score {
-            font-size: 24px;
-            color: #4ecdc4;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
         .game-area {
             display: flex;
             justify-content: center;
@@ -100,12 +94,7 @@
         .edge-control {
             position: absolute;
             background-color: rgba(78, 205, 196, 0.3);
-            transition: background-color 0.3s;
             z-index: 20;
-        }
-        
-        .edge-control:active {
-            background-color: rgba(78, 205, 196, 0.6);
         }
         
         .edge-top {
@@ -187,6 +176,7 @@
             background: linear-gradient(45deg, #36d1dc, #5b86e5);
             border-radius: 50%;
             z-index: 10;
+            transition: left 0.1s linear, top 0.1s linear;
         }
         
         .worm-eye {
@@ -204,19 +194,19 @@
             height: 18px;
             background: linear-gradient(45deg, #5b86e5, #36d1dc);
             border-radius: 50%;
+            transition: left 0.1s linear, top 0.1s linear;
         }
         
         .number {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: bold;
             color: white;
-            background: linear-gradient(45deg, #ff7e5f, #feb47b);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             font-size: 14px;
             z-index: 5;
@@ -315,9 +305,7 @@
             <img src="https://raw.githubusercontent.com/Riazzuu/logo/main/Riazzuu.jpg" alt="وبلاگ">
         </a>
         
-        <div class="instruction">اگر زوج‌ها را بخوری بزرگ می‌شوی کرمعلی!</div>
-        
-        <div class="score">امتیاز: <span id="score">0</span></div>
+        <div class="instruction">اعداد زوج کرم را بزرگ‌تر می‌کنند!</div>
         
         <div class="game-area">
             <div class="game-board-container">
@@ -342,7 +330,7 @@
         <div class="controls">
             <button class="control-btn start-btn" id="startBtn">شروع بازی</button>
             <button class="control-btn pause-btn" id="pauseBtn">توقف</button>
-            <button class="control-btn speed-btn" ontouchstart="increaseSpeed()" ontouchend="resetSpeed()" onmousedown="increaseSpeed()" onmouseup="resetSpeed()">شتاب</button>
+            <button class="control-btn speed-btn" onclick="toggleSpeed()">شتاب</button>
         </div>
         
         <div class="social-icons">
@@ -361,18 +349,17 @@
     <script>
         // متغیرهای بازی
         let gameBoard = document.getElementById('gameBoard');
-        let scoreDisplay = document.getElementById('score');
         let startBtn = document.getElementById('startBtn');
         let pauseBtn = document.getElementById('pauseBtn');
         
         let gameInterval;
         let worm = [];
         let direction = 'right';
-        let score = 0;
+        let nextDirection = 'right';
         let numbers = [];
         let gameRunning = false;
         let wormSize = 3;
-        let gameSpeed = 100;
+        let gameSpeed = 120;
         let isSpeedBoost = false;
         let numberTimer;
         let numbersGenerated = 0;
@@ -383,7 +370,18 @@
             'linear-gradient(45deg, #a8ff78, #78ffd6)',
             'linear-gradient(45deg, #f46b45, #eea849)'
         ];
+        let numberColors = [
+            'linear-gradient(45deg, #ff7e5f, #feb47b)',
+            'linear-gradient(45deg, #00c9ff, #92fe9d)',
+            'linear-gradient(45deg, #f09819, #edde5d)',
+            'linear-gradient(45deg, #f5576c, #f093fb)',
+            'linear-gradient(45deg, #5d69be, #c89feb)',
+            'linear-gradient(45deg, #225566, #5bbcc4)',
+            'linear-gradient(45deg, #40e0d0, #ff8c00, #ff0080)'
+        ];
         let currentColorIndex = 0;
+        let lastTimestamp = 0;
+        let requestId;
         
         // ابعاد صفحه بازی
         const boardWidth = 400;
@@ -456,47 +454,59 @@
             });
         }
         
-        // حرکت کرم
-        function moveWorm() {
+        // حرکت کرم با استفاده از requestAnimationFrame برای روان‌تر شدن
+        function moveWorm(timestamp) {
             if (!gameRunning) return;
             
-            // ذخیره موقعیت قبلی سر کرم
-            let head = worm[0];
-            let headX = parseInt(head.style.left || 0);
-            let headY = parseInt(head.style.top || 0);
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const deltaTime = timestamp - lastTimestamp;
             
-            // حرکت بخش‌های بدن کرم
-            for (let i = worm.length - 1; i > 0; i--) {
-                let segment = worm[i];
-                let prevSegment = worm[i - 1];
+            if (deltaTime > gameSpeed) {
+                lastTimestamp = timestamp;
                 
-                segment.style.left = prevSegment.style.left;
-                segment.style.top = prevSegment.style.top;
+                // اعمال تغییر جهت
+                direction = nextDirection;
+                
+                // ذخیره موقعیت قبلی سر کرم
+                let head = worm[0];
+                let headX = parseInt(head.style.left || 0);
+                let headY = parseInt(head.style.top || 0);
+                
+                // حرکت بخش‌های بدن کرم
+                for (let i = worm.length - 1; i > 0; i--) {
+                    let segment = worm[i];
+                    let prevSegment = worm[i - 1];
+                    
+                    segment.style.left = prevSegment.style.left;
+                    segment.style.top = prevSegment.style.top;
+                }
+                
+                // حرکت سر کرم بر اساس جهت
+                let speed = isSpeedBoost ? 8 : 5;
+                
+                switch(direction) {
+                    case 'up':
+                        head.style.top = (headY - speed) + 'px';
+                        break;
+                    case 'down':
+                        head.style.top = (headY + speed) + 'px';
+                        break;
+                    case 'left':
+                        head.style.left = (headX - speed) + 'px';
+                        break;
+                    case 'right':
+                        head.style.left = (headX + speed) + 'px';
+                        break;
+                }
+                
+                // بررسی برخورد با دیوارها
+                checkWallCollision();
+                
+                // بررسی برخورد با اعداد
+                checkNumberCollision();
             }
             
-            // حرکت سر کرم بر اساس جهت
-            let speed = isSpeedBoost ? 8 : 5;
-            
-            switch(direction) {
-                case 'up':
-                    head.style.top = (headY - speed) + 'px';
-                    break;
-                case 'down':
-                    head.style.top = (headY + speed) + 'px';
-                    break;
-                case 'left':
-                    head.style.left = (headX - speed) + 'px';
-                    break;
-                case 'right':
-                    head.style.left = (headX + speed) + 'px';
-                    break;
-            }
-            
-            // بررسی برخورد با دیوارها
-            checkWallCollision();
-            
-            // بررسی برخورد با اعداد
-            checkNumberCollision();
+            requestId = requestAnimationFrame(moveWorm);
         }
         
         // بررسی برخورد با دیوارها
@@ -532,13 +542,11 @@
                     // بررسی زوج یا فرد بودن عدد
                     if (numValue === 0) {
                         // عدد صفر - هیچ تغییری در اندازه کرم ایجاد نمی‌کند
-                        score += 5;
                         playSuccessSound();
                     } else if (numValue % 2 === 0) {
                         // عدد زوج - بزرگ شدن کرم
                         wormSize++;
                         addWormSegment();
-                        score += numValue * 2;
                         playSuccessSound();
                     } else {
                         // عدد فرد - کوچک شدن کرم
@@ -547,10 +555,7 @@
                             gameBoard.removeChild(lastSegment);
                             wormSize--;
                         }
-                        score += numValue;
                     }
-                    
-                    scoreDisplay.textContent = score;
                     
                     // ایجاد عدد جدید
                     createNumber();
@@ -624,7 +629,7 @@
             if (numbersGenerated > 0 && numbersGenerated % 10 === 0) {
                 numValue = 0;
             } else {
-                numValue = Math.floor(Math.random() * 20) + 1; // عدد بین 1 تا 20
+                numValue = Math.floor(Math.random() * 100); // عدد بین 0 تا 99
             }
             
             numbersGenerated++;
@@ -632,9 +637,14 @@
             number.className = 'number';
             number.textContent = numValue;
             
-            // قرار دادن عدد در موقعیت تصادفی
-            let posX = Math.floor(Math.random() * (boardWidth - 40));
-            let posY = Math.floor(Math.random() * (boardHeight - 40));
+            // انتخاب رنگ تصادفی برای عدد
+            const randomColorIndex = Math.floor(Math.random() * numberColors.length);
+            number.style.background = numberColors[randomColorIndex];
+            
+            // قرار دادن عدد در موقعیت تصادفی (دور از لبه‌ها)
+            const margin = 30; // حاشیه امن برای جلوگیری از قرارگیری اعداد در لبه
+            let posX = margin + Math.floor(Math.random() * (boardWidth - 2 * margin - 30));
+            let posY = margin + Math.floor(Math.random() * (boardHeight - 2 * margin - 30));
             
             number.style.left = posX + 'px';
             number.style.top = posY + 'px';
@@ -667,7 +677,7 @@
                 return;
             }
             
-            direction = newDirection;
+            nextDirection = newDirection;
         }
         
         // مدیریت جهت‌ها (ادامه بازی اگر متوقف شده)
@@ -678,14 +688,9 @@
             changeDirection(newDirection);
         }
         
-        // افزایش سرعت با دکمه شتاب
-        function increaseSpeed() {
-            isSpeedBoost = true;
-        }
-        
-        // بازگشت به سرعت عادی
-        function resetSpeed() {
-            isSpeedBoost = false;
+        // تغییر وضعیت سرعت با دکمه شتاب (toggle)
+        function toggleSpeed() {
+            isSpeedBoost = !isSpeedBoost;
         }
         
         // شروع بازی
@@ -698,9 +703,9 @@
             gameRunning = true;
             resetGame();
             
-            gameInterval = setInterval(() => {
-                moveWorm();
-            }, gameSpeed);
+            // استفاده از requestAnimationFrame برای حرکت روان‌تر
+            lastTimestamp = 0;
+            requestId = requestAnimationFrame(moveWorm);
             
             // شروع ایجاد اعداد
             startNumberGeneration();
@@ -714,7 +719,7 @@
             if (!gameRunning) return;
             
             gameRunning = false;
-            clearInterval(gameInterval);
+            cancelAnimationFrame(requestId);
             stopNumberGeneration();
             pauseBtn.textContent = 'ادامه';
         }
@@ -724,9 +729,8 @@
             if (gameRunning) return;
             
             gameRunning = true;
-            gameInterval = setInterval(() => {
-                moveWorm();
-            }, gameSpeed);
+            lastTimestamp = 0;
+            requestId = requestAnimationFrame(moveWorm);
             
             // شروع ایجاد اعداد
             startNumberGeneration();
@@ -737,9 +741,9 @@
         // بازی تمام شد
         function gameOver() {
             gameRunning = false;
-            clearInterval(gameInterval);
+            cancelAnimationFrame(requestId);
             stopNumberGeneration();
-            alert(`بازی تمام شد! امتیاز شما: ${score}`);
+            alert('بازی تمام شد!');
         }
         
         // ریست کردن بازی
@@ -752,13 +756,12 @@
             // ریست کردن متغیرها
             worm = [];
             numbers = [];
-            score = 0;
             wormSize = 3;
             direction = 'right';
+            nextDirection = 'right';
             numbersGenerated = 0;
             currentColorIndex = 0;
-            
-            scoreDisplay.textContent = '0';
+            isSpeedBoost = false;
             
             // ایجاد کرم و اعداد جدید
             createWorm();
@@ -794,6 +797,9 @@
                     break;
                 case 'ArrowRight':
                     changeDirection('right');
+                    break;
+                case ' ': // فاصله برای شتاب
+                    toggleSpeed();
                     break;
             }
         });
