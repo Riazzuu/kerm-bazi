@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>آزمون شیطان کش</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0a0505 0%, #1a0505 50%, #2a0808 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    padding-top: 120px;
+    color: #fff;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(255,60,60,0.18) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,140,40,0.12) 0%, transparent 40%),
+      radial-gradient(circle at 50% 50%, rgba(80,150,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ===== SOCIAL ICONS BAR ===== */
+  .social-bar {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 10px 24px;
+    border-radius: 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    min-width: 200px;
+    max-width: 94vw;
+    width: auto;
+    white-space: nowrap;
+    flex-wrap: nowrap;
+  }
+
+  .social-bar .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .social-bar .social-link:hover {
+    transform: scale(1.08);
+  }
+
+  .social-bar .social-link img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: transparent;
+    padding: 0;
+    border: none;
+    flex-shrink: 0;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    height: calc(100vh - 140px);
+    max-height: calc(100vh - 140px);
+    display: flex;
+    flex-direction: column;
+    background: #120808;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(255,50,50,0.15);
+    position: relative;
+    z-index: 1;
+    border: 3px solid #5a0a0a;
+  }
+
+  /* ===== هدر ===== */
+  .header {
+    background: linear-gradient(135deg, #1a0505 0%, #4a0808 50%, #8a0a0a 100%);
+    color: #fff;
+    padding: 10px 16px 10px;
+    flex-shrink: 0;
+    border-bottom: 2px solid #ff3030;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(255,50,50,0.3);
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff3030, #ffa500, #ff3030, transparent);
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 6px;
+    opacity: 0.95;
+  }
+
+  .header-top .title {
+    font-weight: 900;
+    font-size: 16px;
+    text-shadow: 0 0 12px rgba(255,80,80,0.9), 0 0 4px rgba(255,200,100,0.6);
+    letter-spacing: 0.5px;
+  }
+
+  .score-badge {
+    background: linear-gradient(135deg, rgba(255,50,50,0.4), rgba(255,150,50,0.3));
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+    text-shadow: 0 0 8px rgba(255,80,80,0.8);
+    border: 1px solid rgba(255,80,80,0.6);
+  }
+
+  .level-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,80,80,0.12);
+    padding: 6px 12px;
+    border-radius: 8px;
+    margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(255,80,80,0.3);
+  }
+
+  .level-bar .level-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-shadow: 0 0 8px rgba(255,80,80,0.5);
+  }
+
+  .level-bar .level-value {
+    background: linear-gradient(135deg, #8a0a0a, #ff3030);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 12px;
+    border: 1px solid #ff6060;
+    text-shadow: 0 0 6px rgba(255,255,255,0.5);
+    box-shadow: 0 0 12px rgba(255,50,50,0.6);
+  }
+
+  .progress-bar {
+    height: 7px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255,80,80,0.4);
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #8a0a0a, #ff3030, #ffa500, #ffd700);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+    box-shadow: 0 0 12px rgba(255,100,50,0.9);
+  }
+
+  /* ===== بدنه ===== */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    -webkit-overflow-scrolling: touch;
+    background: #0a0505;
+    background-image:
+      radial-gradient(circle at 10% 10%, rgba(255,50,50,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(80,150,255,0.05) 0%, transparent 40%);
+  }
+
+  .question-card {
+    background: linear-gradient(135deg, #1a0808 0%, #250a0a 100%);
+    border-radius: 10px;
+    padding: 16px 14px;
+    border: 2px solid #8a0a0a;
+    animation: popIn 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 25px rgba(255,50,50,0.15), inset 0 0 30px rgba(0,0,0,0.6);
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .q-label {
+    display: inline-block;
+    background: linear-gradient(135deg, #8a0a0a, #ff3030);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    padding: 4px 14px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    align-self: flex-start;
+    text-shadow: 0 0 5px rgba(0,0,0,0.6);
+    border: 1px solid #ff6060;
+    box-shadow: 0 0 12px rgba(255,50,50,0.5);
+  }
+
+  .question-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffd5d5;
+    line-height: 2;
+    margin-bottom: 14px;
+    text-align: right;
+    direction: rtl;
+  }
+
+  /* ===== خط اعداد LTR ===== */
+  .numbers-line {
+    display: block;
+    direction: ltr;
+    text-align: center;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffd700;
+    background: rgba(255,80,80,0.08);
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+    border: 1px solid rgba(255,100,50,0.35);
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px rgba(255,215,0,0.7);
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+
+  /* ===== پاسخ کوتاه ===== */
+  .short-answer-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .short-input {
+    flex: 1;
+    padding: 12px 14px;
+    border: 2px solid #8a0a0a;
+    border-radius: 8px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: #ffd700;
+    direction: ltr;
+    text-align: center;
+    background: #1a0808;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .short-input::placeholder { color: #884444; }
+
+  .short-input:focus {
+    border-color: #ff3030;
+    box-shadow: 0 0 20px rgba(255,50,50,0.5);
+  }
+
+  .short-input.correct {
+    border-color: #4ade80;
+    background: #0a2010;
+    color: #4ade80;
+    box-shadow: 0 0 20px rgba(74,222,128,0.5);
+  }
+
+  .short-input.wrong {
+    border-color: #ff3030;
+    background: #2a0808;
+    color: #ff6060;
+    box-shadow: 0 0 20px rgba(255,50,50,0.5);
+  }
+
+  .submit-btn {
+    padding: 12px 18px;
+    border: 2px solid #ff6060;
+    border-radius: 8px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #8a0a0a 0%, #ff3030 100%);
+    box-shadow: 0 0 15px rgba(255,50,50,0.5);
+    transition: all 0.15s;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(0,0,0,0.6);
+  }
+
+  .submit-btn:active { transform: scale(0.96); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ===== بازخورد ===== */
+  .feedback {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    animation: slideUp 0.3s ease;
+    margin-top: 8px;
+    border: 2px solid;
+  }
+
+  .feedback.show { display: flex; }
+
+  .feedback.ok {
+    background: rgba(74,222,128,0.1);
+    color: #4ade80;
+    border-color: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.3);
+  }
+
+  .feedback.no {
+    background: rgba(255,50,50,0.1);
+    color: #ff6060;
+    border-color: #ff3030;
+    box-shadow: 0 0 15px rgba(255,50,50,0.3);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== راهنما ===== */
+  .explain-box {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(255,165,0,0.08), rgba(255,80,80,0.06));
+    border: 2px solid rgba(255,165,0,0.4);
+    border-radius: 10px;
+    display: none;
+    animation: slideUp 0.4s ease;
+    box-shadow: 0 0 20px rgba(255,165,0,0.15);
+  }
+
+  .explain-box.show { display: block; }
+
+  .explain-title {
+    font-size: 13px;
+    font-weight: 900;
+    color: #ffa500;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-shadow: 0 0 10px rgba(255,165,0,0.5);
+  }
+
+  .explain-step { margin-bottom: 8px; }
+  .explain-step:last-child { margin-bottom: 0; }
+
+  .fa-line {
+    font-size: 13px;
+    color: #ffd5d5;
+    font-weight: 600;
+    line-height: 2;
+    direction: rtl;
+    text-align: right;
+    margin-bottom: 4px;
+  }
+
+  .math-line {
+    font-size: 15px;
+    color: #ffd700;
+    font-weight: 900;
+    direction: ltr;
+    text-align: left;
+    background: rgba(255,80,80,0.1);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    display: block;
+    border: 1px solid rgba(255,165,0,0.35);
+    font-family: 'Consolas', 'Monaco', monospace;
+    letter-spacing: 1px;
+    overflow-x: auto;
+    white-space: nowrap;
+    text-shadow: 0 0 8px rgba(255,215,0,0.5);
+  }
+
+  .math-line .rtl-text {
+    direction: rtl;
+    unicode-bidi: embed;
+    display: inline-block;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+  }
+
+  .explain-final {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1.5px dashed rgba(255,165,0,0.5);
+    font-size: 13px;
+    font-weight: 900;
+    color: #ffa500;
+    direction: rtl;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .explain-final .num {
+    color: #4ade80;
+    font-size: 16px;
+    text-shadow: 0 0 8px rgba(74,222,128,0.6);
+  }
+
+  /* ===== گزینه‌ها ===== */
+  .options-bar {
+    flex-shrink: 0;
+    padding: 10px 14px 14px;
+    background: linear-gradient(180deg, #1a0808 0%, #120505 100%);
+    border-top: 2px solid #8a0a0a;
+  }
+
+  .options-title {
+    font-size: 11px;
+    color: #ffa500;
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255,165,0,0.5);
+  }
+
+  .options {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .opt-btn {
+    flex: 1;
+    min-width: 70px;
+    max-width: 105px;
+    min-height: 60px;
+    border: 2px solid #8a0a0a;
+    background: linear-gradient(135deg, #1a0808, #220a0a);
+    border-radius: 8px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    color: #ffd5d5;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 6px;
+    user-select: none;
+    text-align: center;
+    line-height: 1.5;
+    direction: ltr;
+    unicode-bidi: embed;
+    box-shadow: 0 0 10px rgba(255,50,50,0.15);
+  }
+
+  .opt-btn:active { transform: scale(0.95); }
+  .opt-btn:hover {
+    border-color: #ff3030;
+    background: linear-gradient(135deg, #2a0808, #3a0a0a);
+    box-shadow: 0 0 15px rgba(255,50,50,0.4);
+  }
+
+  .opt-btn.correct {
+    background: linear-gradient(135deg, #0a2a10, #1a4a20);
+    border-color: #4ade80;
+    color: #4ade80;
+    animation: pulse 0.4s;
+    box-shadow: 0 0 20px rgba(74,222,128,0.6);
+    text-shadow: 0 0 8px rgba(74,222,128,0.6);
+  }
+
+  .opt-btn.wrong {
+    background: linear-gradient(135deg, #2a0808, #4a0a0a);
+    border-color: #ff3030;
+    color: #ff6060;
+    animation: shake 0.4s;
+    box-shadow: 0 0 20px rgba(255,50,50,0.6);
+    text-shadow: 0 0 8px rgba(255,80,80,0.6);
+  }
+
+  .opt-btn.long-text {
+    font-size: 12px;
+    line-height: 1.6;
+    direction: rtl;
+    unicode-bidi: normal;
+    text-align: right;
+    justify-content: flex-start;
+    padding: 8px 10px;
+    max-width: none;
+    flex-basis: 100%;
+    min-height: auto;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .opt-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+  .opt-btn:disabled:hover { border-color: #8a0a0a; background: linear-gradient(135deg, #1a0808, #220a0a); }
+
+  /* ===== صفحه نتیجه ===== */
+  .result {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    height: 100%;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .result.show { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .result .emoji {
+    font-size: 80px;
+    margin-bottom: 10px;
+    animation: bounce 1.2s ease infinite;
+    filter: drop-shadow(0 0 20px rgba(255,100,50,0.8));
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .result h2 {
+    font-size: 22px;
+    color: #ffd5d5;
+    margin-bottom: 4px;
+  }
+
+  .result .level-title {
+    font-size: 26px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff3030, #ffa500, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 8px 0;
+    line-height: 1.4;
+    filter: drop-shadow(0 0 10px rgba(255,100,50,0.5));
+  }
+
+  .result .score-big {
+    font-size: 48px;
+    font-weight: 900;
+    color: #ffd700;
+    margin: 4px 0;
+    text-shadow: 0 0 20px rgba(255,215,0,0.6);
+  }
+
+  .result .score-text {
+    font-size: 13px;
+    color: #ffa500;
+    margin-bottom: 18px;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(255,165,0,0.4);
+  }
+
+  .result-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 22px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stat-box {
+    flex: 1;
+    max-width: 115px;
+    background: linear-gradient(135deg, #1a0808, #220a0a);
+    border-radius: 8px;
+    padding: 12px 8px;
+    border: 2px solid #8a0a0a;
+    box-shadow: 0 0 15px rgba(255,50,50,0.2);
+  }
+
+  .stat-box .num { font-size: 26px; font-weight: 900; display: block; }
+  .stat-box .lbl { font-size: 11px; color: #ffa500; margin-top: 2px; font-weight: 700; }
+  .stat-box.green .num { color: #4ade80; text-shadow: 0 0 10px rgba(74,222,128,0.5); }
+  .stat-box.red .num { color: #ff6060; text-shadow: 0 0 10px rgba(255,80,80,0.5); }
+
+  .btn {
+    width: 100%;
+    max-width: 250px;
+    padding: 13px;
+    border: 2px solid #ff6060;
+    border-radius: 8px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #fff;
+    background: linear-gradient(135deg, #8a0a0a 0%, #ff3030 100%);
+    box-shadow: 0 0 25px rgba(255,50,50,0.5);
+    text-shadow: 0 0 5px rgba(0,0,0,0.6);
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .next-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: 2px solid #ffa500;
+    border-radius: 8px;
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: #fff;
+    background: linear-gradient(135deg, #8a0a0a 0%, #ffa500 100%);
+    box-shadow: 0 0 20px rgba(255,165,0,0.5);
+    display: none;
+    animation: slideUp 0.3s ease;
+    text-shadow: 0 0 5px rgba(0,0,0,0.6);
+  }
+
+  .next-btn.show { display: block; }
+  .next-btn:active { transform: scale(0.97); }
+
+  .content::-webkit-scrollbar { width: 6px; }
+  .content::-webkit-scrollbar-thumb { background: #8a0a0a; border-radius: 4px; }
+  .content::-webkit-scrollbar-track { background: #0a0505; }
+
+  @media (max-height: 700px) {
+    body { padding-top: 100px; }
+    .app { height: calc(100vh - 120px); max-height: calc(100vh - 120px); }
+    .social-bar { padding: 8px 16px; gap: 16px; }
+    .social-bar .social-link img { width: 44px; height: 44px; }
+    .question-text { font-size: 14px; }
+    .opt-btn { min-height: 52px; font-size: 13px; }
+    .question-card { padding: 12px 12px; }
+    .content { padding: 10px 12px; }
+    .options-bar { padding: 8px 12px 10px; }
+    .fa-line { font-size: 12px; }
+    .math-line { font-size: 13px; padding: 6px 10px; }
+    .result .level-title { font-size: 20px; }
+    .short-input { font-size: 16px; padding: 10px 12px; }
+  }
+
+  @media (max-height: 640px) {
+    body { padding-top: 90px; }
+    .app { height: calc(100vh - 105px); max-height: calc(100vh - 105px); }
+    .social-bar { padding: 6px 12px; gap: 12px; border-radius: 35px; }
+    .social-bar .social-link img { width: 38px; height: 38px; }
+  }
+
+  @media (max-width: 380px) {
+    body { padding-top: 85px; }
+    .app { height: calc(100vh - 100px); max-height: calc(100vh - 100px); }
+    .social-bar { padding: 5px 10px; gap: 10px; border-radius: 30px; }
+    .social-bar .social-link img { width: 32px; height: 32px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ===== SOCIAL ICONS BAR ===== -->
+  <div class="social-bar">
+    <a href="https://eitaa.com/riazzuu" target="_blank" class="social-link" title="ایتا">
+      <img src="data:image/png;base64,x" alt="ایتا">
+    </a>
+    <a href="https://www.shad.ir/t/riazzuu" target="_blank" class="social-link" title="ریاضو">
+      <img src="data:image/png;base64,x" alt="ریاضو">
+    </a>
+    <a href="https://www.aparat.com/Riazzuu" target="_blank" class="social-link" title="آپارات">
+      <img src="data:image/png;base64,x" alt="آپارات">
+    </a>
+  </div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <span class="title">🗡️ آزمون شیطان کش</span>
+      <span class="score-badge" id="scoreBadge">🔥 ۰</span>
+    </div>
+    <div class="level-bar">
+      <span class="level-label">🎯 سطح فعلی:</span>
+      <span class="level-value" id="levelBadge">🌸 تازه‌کار</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress"></div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <div id="quizArea" style="display:flex; flex-direction:column; flex:1;">
+      <div class="question-card">
+        <span class="q-label" id="qLabel">سوال ۱ از ۱۰</span>
+        <div class="question-text" id="questionText"></div>
+        <div id="answerArea"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="explain-box" id="explainBox">
+          <div class="explain-title">📖 راهنمای تنفس</div>
+          <div id="explainContent"></div>
+        </div>
+        <button class="next-btn" id="nextBtn" onclick="goNext()">سوال بعدی ←</button>
+      </div>
+    </div>
+
+    <div class="result" id="resultScreen">
+      <div class="emoji" id="resultEmoji">🔥</div>
+      <h2 id="resultTitle">آفرین!</h2>
+      <div class="level-title" id="levelTitle"></div>
+      <div class="score-big" id="resultScore">۰٪</div>
+      <div class="score-text" id="resultText"></div>
+      <div class="result-stats">
+        <div class="stat-box green">
+          <span class="num" id="correctCount">۰</span>
+          <span class="lbl">صحیح</span>
+        </div>
+        <div class="stat-box red">
+          <span class="num" id="wrongCount">۰</span>
+          <span class="lbl">غلط</span>
+        </div>
+      </div>
+      <button class="btn" onclick="restartQuiz()">🔄 شروع دوباره</button>
+    </div>
+  </div>
+
+  <div class="options-bar" id="optionsBar">
+    <div class="options-title" id="optionsTitle">👇 پاسخ درست را انتخاب کن</div>
+    <div class="options" id="options"></div>
+  </div>
+</div>
+
+<script>
+/* ===== تبدیل اعداد ===== */
+function toFa(n) {
+  return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+function faNum(n) {
+  return toFa(Number(n).toLocaleString('en-US'));
+}
+function parseFa(str) {
+  const faDigits = '۰۱۲۳۴۵۶۷۸۹';
+  const enDigits = '0123456789';
+  let result = String(str).trim();
+  for (let i = 0; i < 10; i++) {
+    result = result.split(faDigits[i]).join(enDigits[i]);
+  }
+  result = result.replace(/[،,٬\s]/g, '');
+  return result;
+}
+
+/* ===== سطوح شیطان کش ===== */
+function getLevelInfo(percent) {
+  if (percent >= 80) return { badge: '🔥 هاشیرا', emoji: '🔥', title: 'در حد هاشیرا! 🔥', sub: 'فوق‌العاده! تو یک ستون شکارچیانی!' };
+  if (percent >= 60) return { badge: '🗡️ شکارچی شیطان', emoji: '🗡️', title: 'در حد شکارچی شیطان! 🗡️', sub: 'عالی بود! نزدیک به کامل!' };
+  if (percent >= 40) return { badge: '⚡ شاگرد تن‌گن', emoji: '⚡', title: 'در حد شاگرد تن‌گن! ⚡', sub: 'خوب بود! با تمرین بهتر می‌شوی.' };
+  return { badge: '🌸 تازه‌کار', emoji: '🌸', title: 'در حد تازه‌کار! 🌸', sub: 'نیاز به تمرین بیشتر داری.' };
+}
+
+/* ===== بانک ۱۰ سوال به ترتیب ===== */
+const questions = [
+  {
+    type: 'short',
+    q: 'تانجیرو در شب اول ۱ شیطان، شب دوم ۴ شیطان، شب سوم ۷ شیطان و شب چهارم ۱۰ شیطان را شکست داد. اگر همین روند ادامه پیدا کند، شب پنجم چند شیطان شکست می‌دهد؟',
+    answer: 13,
+    numbersLine: '1 , 4 , 7 , 10 , ...',
+    explain: [
+      { fa: 'هر شب ۳ شیطان بیشتر از شب قبل شکست می‌دهد.', math: '1 -> 4 -> 7 -> 10' },
+      { fa: 'پس شب پنجم:', math: '10 + 3 = 13' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'قدرت هاشیراها در جلسه‌ی مخفی به ترتیب زیر افزایش می‌یابد. قدرت بعدی کدام است؟',
+    answer: '۲۵',
+    distractors: ['۲۰', '۲۴', '۳۶'],
+    numbersLine: '1 , 4 , 9 , 16 , ...',
+    explain: [
+      { fa: 'این اعداد توان دوم هستند.', math: '1^2 , 2^2 , 3^2 , 4^2' },
+      { fa: 'قدرت بعدی:', math: '5^2 = 25' }
+    ]
+  },
+  {
+    type: 'short',
+    q: 'زنیتسو در تمرین تنفس رعد، هر روز انرژی خود را نصف می‌کند. اگر روز اول ۶۴ واحد، روز دوم ۳۲ واحد، روز سوم ۱۶ واحد و روز چهارم ۸ واحد انرژی داشت، روز پنجم چند واحد انرژی دارد؟',
+    answer: 4,
+    numbersLine: '64 , 32 , 16 , 8 , ...',
+    explain: [
+      { fa: 'هر روز انرژی نصف می‌شود.', math: '64 / 2 = 32' },
+      { fa: 'پس روز پنجم:', math: '8 / 2 = 4' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'تانجیرو در ۴ شب متوالی به ترتیب ۱، ۴، ۷ و ۱۰ شیطان را شکست داده است. کدام رابطه بین تعداد شیطان‌ها وجود دارد؟',
+    answer: 'هر شب ۳ شیطان بیشتر می‌شود',
+    distractors: ['هر شب ۲ برابر می‌شود', 'هر شب ۴ شیطان بیشتر می‌شود', 'تعداد شیطان‌ها تصادفی است'],
+    numbersLine: '1 , 4 , 7 , 10',
+    explain: [
+      { fa: 'اختلاف هر دو عدد متوالی ۳ است.', math: '4 - 1 = 3' },
+      { fa: 'پس هر شب ۳ شیطان بیشتر می‌شود.', math: '' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'شینوبو برای تمرین، داروهای خود را به شکل مثلث می‌چیند. برای مثلث اول ۴ دارو، مثلث دوم ۷ دارو و مثلث سوم ۱۰ دارو لازم دارد. برای مثلث پنجم چند دارو لازم است؟',
+    answer: '۱۶',
+    distractors: ['۱۳', '۱۹', '۲۲'],
+    numbersLine: '4 , 7 , 10 , ...',
+    explain: [
+      { fa: 'هر مثلث ۳ دارو بیشتر از قبلی لازم دارد.', math: '4 , 7 , 10' },
+      { fa: 'ردیف اعداد:', math: '4 , 7 , 10 , 13 , 16' },
+      { fa: 'پس مثلث پنجم:', math: '16 دارو' }
+    ]
+  },
+  {
+    type: 'short',
+    q: 'رنگ‌کو برای تمرین شمشیرزنی، تیغه‌ها را به ترتیب زیر می‌چیند (۴، ۷، ۱۰، ...). برای ردیف دهم چند تیغه لازم است؟',
+    answer: 31,
+    numbersLine: '4 , 7 , 10 , ...',
+    explain: [
+      { fa: 'رابطه: ۳ برابر شماره ردیف به‌علاوه ۱', math: '3n + 1' },
+      { fa: 'برای ردیف دهم:', math: '3 * 10 + 1 = 31' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'گیو در تمرین با شمشیرهای چوبی، ردیف‌هایی به این ترتیب می‌سازد (۴، ۷، ۱۰، ۱۳، ۱۶، ...). ردیف ششم چند شمشیر چوبی دارد؟',
+    answer: '۱۹',
+    distractors: ['۲۱', '۲۲', '۲۵'],
+    numbersLine: '4 , 7 , 10 , 13 , 16 , ...',
+    explain: [
+      { fa: 'هر ردیف ۳ شمشیر بیشتر از قبلی دارد.', math: '4 , 7 , 10 , 13 , 16' },
+      { fa: 'ردیف ششم:', math: '16 + 3 = 19' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'تانجیرو در یک مزرعه ۲۰ حیوان (مرغ و گوسفند) دیده. اگر تعداد پاهای کل ۵۶ باشد، چند گوسفند در مزرعه وجود دارد؟',
+    answer: '۸',
+    distractors: ['۵', '۱۰', '۱۲'],
+    numbersLine: '20 animals , 56 legs',
+    explain: [
+      { fa: 'مرغ ۲ پا و گوسفند ۴ پا دارد.', math: 'مرغ = 2 / گوسفند = 4' },
+      { fa: 'حدس: ۱۲ مرغ + ۸ گوسفند', math: '12 * 2 + 8 * 4 = 24 + 32 = 56' },
+      { fa: 'پس ۸ گوسفند داریم.', math: '' }
+    ]
+  },
+  {
+    type: 'short',
+    q: 'دو زاویه مکمل یکدیگرند (مجموعشان ۱۸۰ درجه است). اگر یکی از آن‌ها ۳۰ درجه باشد، زاویه‌ی دیگر چند درجه است؟',
+    answer: 150,
+    numbersLine: '90 - x = y',
+    explain: [
+      { fa: 'دو زاویه مکمل مجموعشان ۱۸۰ درجه است.', math: 'x + y = 180' },
+      { fa: 'اگر یکی ۳۰ باشد:', math: '180 - 30 = 150' }
+    ]
+  },
+  {
+    type: 'mc',
+    q: 'اگر در عبارت ۳x + ۱۰ به جای x عددی بگذاریم و حاصل ۴۶ شود، x چند است؟',
+    answer: '۱۲',
+    distractors: ['۱۰', '۱۴', '۱۶'],
+    numbersLine: '3x + 10 = 46',
+    explain: [
+      { fa: 'ابتدا ۱۰ را از دو طرف کم می‌کنیم.', math: '3x = 46 - 10 = 36' },
+      { fa: 'حالا بر ۳ تقسیم می‌کنیم.', math: 'x = 36 / 3 = 12' }
+    ]
+  }
+];
+
+/* ===== وضعیت ===== */
+let current = 0;
+let score = 0;
+let wrong = 0;
+let answered = false;
+
+const questionText = document.getElementById('questionText');
+const answerArea = document.getElementById('answerArea');
+const optionsEl = document.getElementById('options');
+const feedbackEl = document.getElementById('feedback');
+const qLabel = document.getElementById('qLabel');
+const progress = document.getElementById('progress');
+const scoreBadge = document.getElementById('scoreBadge');
+const levelBadge = document.getElementById('levelBadge');
+const quizArea = document.getElementById('quizArea');
+const resultScreen = document.getElementById('resultScreen');
+const content = document.getElementById('content');
+const explainBox = document.getElementById('explainBox');
+const explainContent = document.getElementById('explainContent');
+const nextBtn = document.getElementById('nextBtn');
+const optionsTitle = document.getElementById('optionsTitle');
+const optionsBar = document.getElementById('optionsBar');
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function updateLevelBadge() {
+  const total = questions.length;
+  const percent = Math.round(score / total * 100);
+  const info = getLevelInfo(percent);
+  levelBadge.textContent = info.badge;
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[current];
+
+  qLabel.textContent = 'سوال ' + toFa(current + 1) + ' از ' + toFa(questions.length);
+  questionText.textContent = q.q;
+
+  // اضافه کردن خط اعداد اگر وجود دارد
+  const existingNumLine = document.getElementById('numbersLine');
+  if (existingNumLine) existingNumLine.remove();
+
+  if (q.numbersLine) {
+    const numLine = document.createElement('div');
+    numLine.className = 'numbers-line';
+    numLine.id = 'numbersLine';
+    numLine.textContent = q.numbersLine;
+    questionText.insertAdjacentElement('afterend', numLine);
+  }
+
+  answerArea.innerHTML = '';
+  optionsEl.innerHTML = '';
+  optionsTitle.textContent = '';
+
+  if (q.type === 'mc') {
+    optionsTitle.textContent = '👇 پاسخ درست را انتخاب کن';
+    optionsBar.style.display = 'block';
+    const allOpts = shuffle([q.answer, ...q.distractors]);
+    allOpts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      if (opt.length > 15) {
+        btn.classList.add('long-text');
+      }
+      btn.textContent = opt;
+      btn.dataset.value = opt;
+      btn.onclick = () => chooseOption(opt, btn);
+      optionsEl.appendChild(btn);
+    });
+  } else if (q.type === 'short') {
+    optionsTitle.textContent = '✍️ پاسخ را با ارقام بنویس';
+    optionsBar.style.display = 'block';
+    const box = document.createElement('div');
+    box.className = 'short-answer-box';
+    box.innerHTML = `
+      <input type="text" class="short-input" id="shortInput" placeholder="پاسخ عددی..." inputmode="numeric" autocomplete="off">
+      <button class="submit-btn" id="submitBtn" onclick="submitShort()">ثبت</button>
+    `;
+    answerArea.appendChild(box);
+    setTimeout(() => {
+      const input = document.getElementById('shortInput');
+      if (input) {
+        input.focus();
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitShort();
+        });
+      }
+    }, 100);
+  }
+
+  feedbackEl.className = 'feedback';
+  feedbackEl.innerHTML = '';
+  explainBox.classList.remove('show');
+  explainContent.innerHTML = '';
+  nextBtn.classList.remove('show');
+
+  progress.style.width = (current / questions.length * 100) + '%';
+  content.scrollTop = 0;
+
+  const card = document.querySelector('.question-card');
+  card.style.animation = 'none';
+  void card.offsetWidth;
+  card.style.animation = 'popIn 0.35s ease';
+}
+
+function chooseOption(value, btn) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const isCorrect = (value === q.answer);
+
+  document.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    b.style.pointerEvents = 'none';
+  });
+
+  if (isCorrect) {
+    score++;
+    btn.classList.add('correct');
+    feedbackEl.className = 'feedback show ok';
+    feedbackEl.innerHTML = '🔥 عالی! مثل هاشیرا پاسخ دادی!';
+    scoreBadge.textContent = '🔥 ' + toFa(score);
+  } else {
+    wrong++;
+    btn.classList.add('wrong');
+    document.querySelectorAll('.opt-btn').forEach(b => {
+      if (b.dataset.value === q.answer) b.classList.add('correct');
+    });
+    feedbackEl.className = 'feedback show no';
+    feedbackEl.innerHTML = '💀 پاسخ درست: ' + q.answer;
+  }
+
+  updateLevelBadge();
+  showExplanation(q);
+}
+
+function submitShort() {
+  if (answered) return;
+  const input = document.getElementById('shortInput');
+  if (!input) return;
+
+  const userAnswer = parseFa(input.value);
+  if (userAnswer === '') {
+    input.focus();
+    return;
+  }
+
+  answered = true;
+  const q = questions[current];
+  const isCorrect = (Number(userAnswer) === q.answer);
+
+  input.disabled = true;
+  const submitBtn = document.getElementById('submitBtn');
+  if (submitBtn) submitBtn.disabled = true;
+
+  if (isCorrect) {
+    score++;
+    input.classList.add('correct');
+    feedbackEl.className = 'feedback show ok';
+    feedbackEl.innerHTML = '🔥 عالی! مثل هاشیرا پاسخ دادی!';
+    scoreBadge.textContent = '🔥 ' + toFa(score);
+  } else {
+    wrong++;
+    input.classList.add('wrong');
+    feedbackEl.className = 'feedback show no';
+    feedbackEl.innerHTML = '💀 پاسخ درست: ' + faNum(q.answer);
+  }
+
+  updateLevelBadge();
+  showExplanation(q);
+}
+
+function showExplanation(q) {
+  setTimeout(() => {
+    explainContent.innerHTML = buildExplanation(q);
+    explainBox.classList.add('show');
+    nextBtn.classList.add('show');
+    nextBtn.textContent = (current === questions.length - 1) ? 'مشاهده نتیجه 🗡️' : 'سوال بعدی ←';
+    setTimeout(() => {
+      explainBox.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
+  }, 400);
+}
+
+function buildExplanation(q) {
+  let html = '';
+  q.explain.forEach(step => {
+    html += '<div class="explain-step">';
+    if (step.fa) html += '<div class="fa-line">' + step.fa + '</div>';
+    if (step.math) {
+      const hasPersian = /[\u0600-\u06FF]/.test(step.math);
+      if (hasPersian) {
+        html += '<div class="math-line"><span class="rtl-text">' + step.math + '</span></div>';
+      } else {
+        html += '<div class="math-line">' + step.math + '</div>';
+      }
+    }
+    html += '</div>';
+  });
+
+  let ansText = (q.type === 'short') ? faNum(q.answer) : q.answer;
+  html += '<div class="explain-final">✅ پاسخ درست: <span class="num">' + ansText + '</span></div>';
+  return html;
+}
+
+function goNext() {
+  current++;
+  if (current < questions.length) {
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  progress.style.width = '100%';
+  quizArea.style.display = 'none';
+  optionsBar.style.display = 'none';
+  resultScreen.classList.add('show');
+  content.scrollTop = 0;
+
+  const total = questions.length;
+  const percent = Math.round(score / total * 100);
+
+  document.getElementById('resultScore').textContent = toFa(percent) + '٪';
+  document.getElementById('correctCount').textContent = toFa(score);
+  document.getElementById('wrongCount').textContent = toFa(wrong);
+
+  const info = getLevelInfo(percent);
+  document.getElementById('resultEmoji').textContent = info.emoji;
+  document.getElementById('resultTitle').textContent = info.sub;
+  document.getElementById('levelTitle').textContent = info.title;
+  document.getElementById('resultText').textContent =
+    'به ' + toFa(score) + ' سوال از ' + toFa(total) + ' سوال درست پاسخ دادی.';
+}
+
+function restartQuiz() {
+  current = 0;
+  score = 0;
+  wrong = 0;
+  scoreBadge.textContent = '🔥 ۰';
+  resultScreen.classList.remove('show');
+  quizArea.style.display = 'flex';
+  optionsBar.style.display = 'block';
+  updateLevelBadge();
+  renderQuestion();
+}
+
+updateLevelBadge();
+renderQuestion();
+</script>
+</body>
+</html>
